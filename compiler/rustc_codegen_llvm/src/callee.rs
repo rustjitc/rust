@@ -10,6 +10,8 @@ use crate::common;
 use crate::context::CodegenCx;
 use crate::llvm;
 use crate::value::Value;
+use llvm::LLVMSearchForAddressOfSymbol;
+use rustc_codegen_ssa::base::codegen_instance;
 use rustc_codegen_ssa::traits::*;
 
 use rustc_middle::ty::layout::{FnAbiOf, HasTyCtxt};
@@ -103,6 +105,12 @@ pub fn get_fn<'ll, 'tcx>(cx: &CodegenCx<'ll, 'tcx>, instance: Instance<'tcx>) ->
         debug!("get_fn: not casting pointer!");
 
         attributes::from_fn_attrs(cx, llfn, instance);
+
+        dbg!(instance);
+        let addr = unsafe {LLVMSearchForAddressOfSymbol(format!("{}\0", sym).as_str().as_ptr().cast()) };
+        if addr.is_null() {
+            codegen_instance::<crate::builder::Builder>(cx, instance);
+        }
 
         // Apply an appropriate linkage/visibility value to our item that we
         // just declared.

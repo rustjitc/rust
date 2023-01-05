@@ -674,6 +674,10 @@ extern "C" {
     pub type DiagnosticHandler;
 }
 
+extern "C" {
+    pub type ExecutionEngine;
+}
+
 pub type DiagnosticHandlerTy = unsafe extern "C" fn(&DiagnosticInfo, *mut c_void);
 pub type InlineAsmDiagHandlerTy = unsafe extern "C" fn(&SMDiagnostic, *const c_void, c_uint);
 
@@ -2492,4 +2496,13 @@ extern "C" {
         callback: GetSymbolsCallback,
         error_callback: GetSymbolsErrorCallback,
     ) -> *mut c_void;
+
+    pub fn LLVMRustLoadLibraryPermanently(FileName: *const c_char) -> Bool;
+    
+    pub fn LLVMLinkInMCJIT();
+    pub fn LLVMRustCreateExecutionEngineForModule(M: &Module) -> &mut ExecutionEngine;
+    pub fn LLVMGetFunctionAddress(EE: &ExecutionEngine, Name: *const c_char) -> u64;
+    pub fn LLVMSearchForAddressOfSymbol(SymbolName: *const c_char) -> *mut c_void;
+    
+    pub fn LLVMDumpModule(Module: &Module);
 }

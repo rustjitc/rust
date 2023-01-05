@@ -1,3 +1,5 @@
+#![feature(rustc_private)]
+
 #![doc(html_root_url = "https://doc.rust-lang.org/nightly/nightly-rustc/")]
 #![feature(associated_type_bounds)]
 #![feature(box_patterns)]
@@ -21,6 +23,29 @@ extern crate rustc_macros;
 extern crate tracing;
 #[macro_use]
 extern crate rustc_middle;
+
+extern crate rustc_serialize;
+extern crate rustc_arena;
+extern crate rustc_ast;
+extern crate rustc_span;
+// extern crate rustc_middle;
+extern crate rustc_attr;
+extern crate rustc_symbol_mangling;
+extern crate rustc_data_structures;
+extern crate rustc_errors;
+extern crate rustc_fs_util;
+extern crate rustc_hir;
+extern crate rustc_incremental;
+extern crate rustc_index;
+// extern crate rustc_macros;
+extern crate rustc_metadata;
+extern crate rustc_query_system;
+extern crate rustc_target;
+extern crate rustc_session;
+extern crate rustc_const_eval;
+
+extern crate jobserver;
+extern crate tempfile;
 
 use rustc_ast as ast;
 use rustc_data_structures::fx::{FxHashMap, FxHashSet};

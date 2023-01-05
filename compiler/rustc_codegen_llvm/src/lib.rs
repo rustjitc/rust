@@ -3,6 +3,7 @@
 //! # Note
 //!
 //! This API is completely unstable and subject to change.
+#![feature(rustc_private)]
 
 #![doc(html_root_url = "https://doc.rust-lang.org/nightly/nightly-rustc/")]
 #![feature(hash_raw_entry)]
@@ -19,6 +20,27 @@
 extern crate rustc_macros;
 #[macro_use]
 extern crate tracing;
+
+extern crate rustc_middle;
+extern crate rustc_attr;
+// extern crate rustc_codegen_ssa;
+extern crate rustc_data_structures;
+extern crate rustc_errors;
+extern crate rustc_fs_util;
+extern crate rustc_hir;
+extern crate rustc_index;
+// extern crate rustc_llvm;
+// extern crate rustc_macros;
+extern crate rustc_metadata;
+extern crate rustc_query_system;
+extern crate rustc_session;
+extern crate rustc_serialize;
+extern crate rustc_symbol_mangling;
+extern crate rustc_target;
+extern crate rustc_ast;
+extern crate rustc_span;
+
+extern crate measureme;
 
 use back::write::{create_informational_target_machine, create_target_machine};
 
@@ -57,11 +79,11 @@ mod allocator;
 mod asm;
 mod attributes;
 mod base;
-mod builder;
+pub mod builder;
 mod callee;
 mod common;
 mod consts;
-mod context;
+pub mod context;
 mod coverageinfo;
 mod debuginfo;
 mod declare;
@@ -75,7 +97,7 @@ pub mod llvm {
     pub use super::llvm_::*;
 }
 
-mod llvm_util;
+pub mod llvm_util;
 mod mono_item;
 mod type_;
 mod type_of;
@@ -387,7 +409,7 @@ unsafe impl Send for ModuleLlvm {}
 unsafe impl Sync for ModuleLlvm {}
 
 impl ModuleLlvm {
-    fn new(tcx: TyCtxt<'_>, mod_name: &str) -> Self {
+    pub fn new(tcx: TyCtxt<'_>, mod_name: &str) -> Self {
         unsafe {
             let llcx = llvm::LLVMRustContextCreate(tcx.sess.fewer_names());
             let llmod_raw = context::create_module(tcx, llcx, mod_name) as *const _;
@@ -425,7 +447,7 @@ impl ModuleLlvm {
         }
     }
 
-    fn llmod(&self) -> &llvm::Module {
+    pub fn llmod(&self) -> &llvm::Module {
         unsafe { &*self.llmod_raw }
     }
 }

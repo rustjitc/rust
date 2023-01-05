@@ -25,7 +25,8 @@ const OPTIONAL_COMPONENTS: &[&str] = &[
 ];
 
 const REQUIRED_COMPONENTS: &[&str] =
-    &["ipo", "bitreader", "bitwriter", "linker", "asmparser", "lto", "coverage", "instrumentation"];
+    // &["ipo", "bitreader", "bitwriter", "linker", "asmparser", "lto", "coverage", "instrumentation", "executionengine", "interpreter", "mcjit", "jitlink"];
+    &["all"];
 
 fn detect_llvm_link() -> (&'static str, &'static str) {
     // Force the link mode we want, preferring static by default, but
@@ -37,6 +38,9 @@ fn detect_llvm_link() -> (&'static str, &'static str) {
     }
 }
 
+// Import `dylib_path_var` function
+include!("../../src/bootstrap/dylib_util.rs");
+
 // Because Cargo adds the compiler's dylib path to our library search path, llvm-config may
 // break: the dylib path for the compiler, as of this writing, contains a copy of the LLVM
 // shared library, which means that when our freshly built llvm-config goes to load it's
@@ -46,7 +50,7 @@ fn detect_llvm_link() -> (&'static str, &'static str) {
 // perfect -- we might actually want to see something from Cargo's added library paths -- but
 // for now it works.
 fn restore_library_path() {
-    let key = tracked_env_var_os("REAL_LIBRARY_PATH_VAR").expect("REAL_LIBRARY_PATH_VAR");
+    let key = tracked_env_var_os("REAL_LIBRARY_PATH_VAR").unwrap_or(dylib_path_var().into());
     if let Some(env) = tracked_env_var_os("REAL_LIBRARY_PATH") {
         env::set_var(&key, &env);
     } else {
@@ -100,7 +104,7 @@ fn output(cmd: &mut Command) -> String {
 
 fn main() {
     for component in REQUIRED_COMPONENTS.iter().chain(OPTIONAL_COMPONENTS.iter()) {
-        println!("cargo:rustc-check-cfg=values(llvm_component,\"{}\")", component);
+        // println!("cargo:rustc-check-cfg=values(llvm_component,\"{}\")", component);
     }
 
     if tracked_env_var_os("RUST_CHECK").is_some() {

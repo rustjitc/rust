@@ -11,6 +11,7 @@
 #if LLVM_VERSION_GE(16, 0)
 #include "llvm/Support/ModRef.h"
 #endif
+#include "llvm-c/ExecutionEngine.h"
 #include "llvm/Object/Archive.h"
 #include "llvm/Object/COFFImportFile.h"
 #include "llvm/Object/ObjectFile.h"
@@ -1971,6 +1972,17 @@ extern "C" void LLVMRustGetMangledName(LLVMValueRef V, RustStringRef Str) {
   RawRustStringOstream OS(Str);
   GlobalValue *GV = unwrap<GlobalValue>(V);
   Mangler().getNameWithPrefix(OS, GV, true);
+}
+
+extern "C" LLVMExecutionEngineRef LLVMRustCreateExecutionEngineForModule(LLVMModuleRef M) {
+  LLVMExecutionEngineRef ee;
+  char *msg;
+  auto Error = LLVMCreateExecutionEngineForModule(&ee, M, &msg);
+  if (Error) {
+    report_fatal_error(msg);
+  }
+  
+  return ee;
 }
 
 // LLVMGetAggregateElement was added in LLVM 15. For earlier LLVM versions just

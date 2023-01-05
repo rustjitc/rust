@@ -22,6 +22,7 @@
 #include "llvm/Support/CBindingWrapping.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Host.h"
+#include "llvm-c/Support.h"
 #if LLVM_VERSION_LT(14, 0)
 #include "llvm/Support/TargetRegistry.h"
 #else
@@ -1561,4 +1562,9 @@ LLVMRustComputeLTOCacheKey(RustStringRef KeyOut, const char *ModId, LLVMRustThin
   );
 
   LLVMRustStringWriteImpl(KeyOut, Key.c_str(), Key.size());
+}
+
+extern "C" LLVMBool
+LLVMRustLoadLibraryPermanently(const char *FileName) {
+  return LLVMLoadLibraryPermanently(FileName);
 }
